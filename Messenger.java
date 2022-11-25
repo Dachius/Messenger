@@ -73,33 +73,29 @@ public class Messenger {
 
     /*
      * Send and receive messages, add someone to the chat, etc.
+     * WIP
      */
     public static void chatLoop(){
         Scanner input = new Scanner(System.in);
-        outer: while(true){
-            System.out.println("            [Login Menu]            ");
-            System.out.println("[login] Login with existing account.");
-            System.out.println("  [new] Create new account.");
+        
+        while(true){
+            System.out.println("               [Chat]               ");
+            System.out.println("???");
+            System.out.println("???");
             System.out.println(" [exit] Exit program.");
               System.out.print("Choose: ");
             switch(input.nextLine().toLowerCase()){
-                case "login":
-                    activeAccount = Account.login();
-                    if(activeAccount != null){
-                        break outer;
-                    }
+                case "":
+
                     break;
-                case "new":
-                    activeAccount = Account.create();
-                    if(activeAccount != null){
-                        break outer;
-                    }
+                case "?":
+                    
                     break;
                 case "exit":
                     System.exit(0);
                     break;
                 default:
-                    System.out.println("Please enter \"login\" or \"new\" (without quotation marks).");
+                    System.out.println("Please enter one of the commands.");
             }
         }
     }
