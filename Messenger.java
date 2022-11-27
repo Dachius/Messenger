@@ -4,33 +4,49 @@ import java.util.*;
  * Basic proof of concept
  */
 
-public class Messenger { 
+public class Messenger {
     private static Account activeAccount;
-    public static void main(String[] args){
-        activeAccount = loginLoop();
-        menuLoop(activeAccount);
+    private static ArrayList<Account> existingAccounts = new ArrayList<Account>();
+
+    public static void main(String[] args) {
+        // activeAccount = loginLoop();
+        loginLoop();
+        // menuLoop(activeAccount);
     }
 
     // Initial login process.
-    public static Account loginLoop(){
+    public static void loginLoop() {
         Scanner input = new Scanner(System.in);
-        while(true){
+        activeAccount = null;
+        while (true) {
             System.out.println("            [Login Menu]            ");
             System.out.println("[login] Login with existing account.");
             System.out.println("  [new] Create new account.");
             System.out.println(" [exit] Exit program.");
-              System.out.print("Choose: ");
-            switch(input.nextLine().toLowerCase()){
+            System.out.print("Choose: ");
+            switch (input.nextLine().toLowerCase()) {
                 case "login":
-                    Account test = Account.login();
-                    if(test != null){
-                        return test;
+                    activeAccount = Account.login(existingAccounts);
+                    if (activeAccount != null) {
+                        // return activeAccount;
+                        menuLoop(activeAccount);
                     }
-                    
-                    System.out.println("Error during login process.");
+                    // System.out.println("Error during login process.");
                     break;
                 case "new":
-                    return Account.create();
+                    System.out.print("\nEnter Username: ");
+                    String name = input.nextLine();
+
+                    System.out.print("Enter password: ");
+                    String password = input.nextLine();
+                    System.out.println();
+
+                    activeAccount = new Account(name, password);
+                    existingAccounts.add(activeAccount);
+
+                    // return account;
+                    menuLoop(activeAccount);
+                    break;
                 case "exit":
                     System.exit(0);
                     break;
@@ -43,16 +59,18 @@ public class Messenger {
     /*
      * Create new chat, enter into chat, add new contact.
      */
-    public static void menuLoop(Account activeAccount){
+    public static void menuLoop(Account activeAccount) {
         Scanner input = new Scanner(System.in);
-        outer: while(true){
+        outer: while (true) {
             System.out.println("                 [Navigation Menu]                 ");
             System.out.println("  [view chats] View chats that you are a member of.");
             System.out.println(" [create chat] Create a new chatroom.");
             System.out.println(" [add contact] Add a new contact.");
+            System.out.println("        [UUID] Get account UUID.");
+            System.out.println("      [logout] Logout of account.");
             System.out.println("        [exit] Exit program.");
-              System.out.print("Choose: ");
-            switch(input.nextLine().toLowerCase()){
+            System.out.print("Choose: ");
+            switch (input.nextLine().toLowerCase()) {
                 case "view chats":
                     // Display chats
                     break outer;
@@ -61,6 +79,12 @@ public class Messenger {
                     break outer;
                 case "add contact":
                     // Add a new contact.
+                    break outer;
+                case "uuid":
+                    System.out.println("UUID: " + activeAccount.getUUID());
+                    break;
+                case "logout":
+                    // Return to login loop.
                     break outer;
                 case "exit":
                     System.exit(0);
@@ -75,21 +99,21 @@ public class Messenger {
      * Send and receive messages, add someone to the chat, etc.
      * WIP
      */
-    public static void chatLoop(){
+    public static void chatLoop() {
         Scanner input = new Scanner(System.in);
-        
-        while(true){
+
+        while (true) {
             System.out.println("               [Chat]               ");
             System.out.println("???");
             System.out.println("???");
             System.out.println(" [exit] Exit program.");
-              System.out.print("Choose: ");
-            switch(input.nextLine().toLowerCase()){
+            System.out.print("Choose: ");
+            switch (input.nextLine().toLowerCase()) {
                 case "":
 
                     break;
                 case "?":
-                    
+
                     break;
                 case "exit":
                     System.exit(0);
@@ -109,52 +133,61 @@ class Account {
 
     private final String UUID;
     private String name;
+    private String password;
     private List<Account> contacts;
     private List<Chat> chats;
 
-    public Account(String name){
+    public Account(String name, String password) {
         UUID = Account.newUUID();
         this.name = name;
+        this.password = password;
         contacts = new ArrayList<>();
         chats = new ArrayList<>();
     }
 
-    public void addChat(Chat c){
+    public void addChat(Chat c) {
         chats.add(c);
     }
 
-    public String getUUID(){
+    public String getUUID() {
         return UUID;
     }
 
-    public String getName(){
+    public String getName() {
         return this.name;
     }
 
+    public String getPassword() {
+        return this.password;
+    }
+
     // WIP, need way to get reference to account object using UUID.
-    public void addContact(String ID){
+    public void addContact(String ID) {
         // Contacts.add(Data.getAccount(ID));
     }
 
     /*
      * Create new UUID.
-     * We're not technically checking that this ID is unique, but there will probabilistically
-     * be no ID colissions among currently living humans because there are 3 * 10^14 combinations.
-     * Feel free to add some checking functionality if you want, but it doesn't matter.
+     * We're not technically checking that this ID is unique, but there will
+     * probabilistically
+     * be no ID colissions among currently living humans because there are 3 * 10^14
+     * combinations.
+     * Feel free to add some checking functionality if you want, but it doesn't
+     * matter.
      * 
      * Generates a string of random numbers or letters, capital and non-capital.
      */
-    private static String newUUID(){
+    private static String newUUID() {
         String building = "";
         Random rand = new Random();
-        for(int i = 0; i < UUID_LENGTH; i++){
+        for (int i = 0; i < UUID_LENGTH; i++) {
             int randNum = rand.nextInt(62);
-            if(randNum <= 9){
-                building += (char)(randNum + 48);
-            } else if(randNum <= 35){
-                building += (char)(randNum + 55);
-            } else{
-                building += (char)(randNum + 61);
+            if (randNum <= 9) {
+                building += (char) (randNum + 48);
+            } else if (randNum <= 35) {
+                building += (char) (randNum + 55);
+            } else {
+                building += (char) (randNum + 61);
             }
         }
 
@@ -165,74 +198,59 @@ class Account {
      * Login with existing account. Storing command line inteface here
      * because I dunno how to properly structure command line interfaces.
      * 
-     * We need some sort of data class which has a map from UUIDs to account objects.
+     * We need some sort of data class which has a map from UUIDs to account
+     * objects.
      * I can code this up and use some JSON but eh.
      */
-    public static Account login(){
+    public static Account login(List<Account> existingAccounts) {
         Scanner input = new Scanner(System.in);
 
-        String id, password;
+        String username, password;
 
-        // Get UUID.
-        while(true){
+        // Get username and check if exists.
+        while (true) {
             System.out.println("---------------------------------");
-            System.out.println("Please provide your account UUID.");
-              System.out.print("[UUID] ");
-            
-            id = input.nextLine();
+            System.out.println("Please provide your username.");
+            System.out.print("[Username] ");
 
-            // Check if UUID is possibly correct, i.e. has length 8 and is alphanumeric.
-            // WIP - We also want to see if UUID actually matches one of the existing accounts.
-            if(!(id.length() == 8 && id.matches("^[a-zA-Z0-9]*$"))){
-                System.out.println("UUID is impossible. Try again.");
-                continue;
-            } else{
-                break;
-            }
-        }
+            username = input.nextLine();
 
-        /*
-         * Get password.
-         * Made maximum attempts logic for fun- doesn't actually provide any security.
-         * Passwords will presumably be stored in plaintext so all for fun.
-         */
-        int attempts = 3;
-        while(true){
-            System.out.println("---------------------------------");
-            System.out.println("Please provide your account password.");
-              System.out.print("[Password] ");
-            
-            password = input.nextLine();
+            for (Account accounts : existingAccounts) {
+                if (accounts.getName().equals(username)) {
+                    /*
+                     * Get password.
+                     * Made maximum attempts logic for fun- doesn't actually provide any security.
+                     * Passwords will presumably be stored in plaintext so all for fun.
+                     */
+                    int attempts = 3;
+                    while (true) {
+                        System.out.println("---------------------------------");
+                        System.out.println("Please provide your account password.");
+                        System.out.print("[Password] ");
 
-            // Check if password matches account with chosen UUID.
-            // WIP
+                        password = input.nextLine();
 
-            String truePass = "temp";
-            if(!password.equals(truePass)){
-                attempts--;
-                System.out.println("Invalid password. (" + attempts + "/3 attempts remain)");
-            } else{
-                System.out.println("Login successful.");
-                break;
+                        // Check if password matches account with chosen username.
+                        if (!password.equals(accounts.getPassword())) {
+                            attempts--;
+                            System.out.println("Invalid password. (" + attempts + "/3 attempts remain)");
+                        } else {
+                            System.out.println("Login successful.");
+                            return accounts;
+                        }
+
+                        if (attempts == 0) {
+                            System.out.println("No further attempts, returning to login menu.");
+                            return null;
+                        }
+                    }
+                }
             }
 
-            if(attempts == 0){
-                System.out.println("No further attempts, returning to login menu.");
-                return null;
-            } 
+            System.out.println("Account not found.\n");
+
+            return null;
         }
-
-        // WIP - Get some way to fetch account object given UUID.
-        // return Data.getAccount(UUID);
-        return new Account("temp");
-    }
-
-    /*
-     * Create new account.
-     * WIP.
-     */
-    public static Account create(){
-        return new Account("temp");
     }
 }
 
@@ -248,7 +266,7 @@ class Chat {
     private String name;
     private List<Message> messages;
 
-    public Chat(Account owner, String name){
+    public Chat(Account owner, String name) {
         this.owner = owner;
         accounts = new ArrayList<>();
 
@@ -258,29 +276,29 @@ class Chat {
         this.addAccount(owner);
     }
 
-    public Chat(Account owner){
+    public Chat(Account owner) {
         this(owner, "Unnamed Chat");
     }
 
     // Add new message
-    public void pushMessage(Message m){
+    public void pushMessage(Message m) {
         messages.add(m);
     }
 
     // Somehow retrieve messages. WIP.
-    public void pullMessage(){
-        
+    public void pullMessage() {
+
     }
 
-    public Account getOwner(){
+    public Account getOwner() {
         return this.owner;
     }
 
-    public String getName(){
+    public String getName() {
         return this.name;
     }
 
-    public void addAccount(Account acc){
+    public void addAccount(Account acc) {
         accounts.add(acc);
         acc.addChat(this);
     }
@@ -288,16 +306,17 @@ class Chat {
 
 /*
  * Message.
- * One could theoretically add functionality for attachments more easily if you used this data structure.
+ * One could theoretically add functionality for attachments more easily if you
+ * used this data structure.
  */
 class Message {
     private String text;
 
-    public Message(String text){
+    public Message(String text) {
         this.text = text;
     }
 
-    public String getMessageString(){
+    public String getMessageString() {
         return text;
     }
 }
