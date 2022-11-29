@@ -1,0 +1,4 @@
+To import or execute this program on your code you just need to import Spam.spamFilter on a Java file.
+Then add spamFilter spam = new spamFilter(); to add the function.
+To test it out you can assign it to a boolean variable to give it a value depending on the results.
+Boolean variable = spam.noSpam(previousMessage, currentMessage).
