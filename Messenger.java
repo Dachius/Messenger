@@ -66,6 +66,7 @@ public class Messenger {
             System.out.println("                  [Navigation Menu]                  ");
             System.out.println("    [view chats] View chats that you are a member of.");
             System.out.println("   [create chat] Create a new chatroom.");
+            System.out.println("  [display chat] Enter a chatroom.");
             System.out.println("   [add contact] Add a new contact.");
             System.out.println(" [view contacts] View contact list.");
             System.out.println("          [UUID] Get account UUID.");
@@ -81,6 +82,10 @@ public class Messenger {
                 case "create chat":
                     System.out.print("Chat name: ");
                     activeAccount.addChat(new Chat(activeAccount, input.nextLine()));
+                    break;
+                case "view chat":
+                    System.out.println("Enter chat name: ");
+                    chatLoop(activeAccount, activeAccount.getChat(input.nextLine()));
                     break;
                 case "add contact":
                     // Add a new contact.
@@ -110,20 +115,25 @@ public class Messenger {
      * Send and receive messages, add someone to the chat, etc.
      * WIP
      */
-    public static void chatLoop() {
+    public static void chatLoop(Account activeAccount, Chat chat) {
         Scanner input = new Scanner(System.in);
 
-        while (true) {
+        outer: while (true) {
             System.out.println("               [Chat]               ");
-            System.out.println("???");
-            System.out.println("???");
-            System.out.println(" [exit] Exit program.");
+            System.out.println("[view] View messages.");
+            System.out.println("[send] Send new message.");
+            System.out.println("[exit] Exit program.");
             System.out.print("Choose: ");
             switch (input.nextLine().toLowerCase()) {
-                case "":
+                case "view":
+                    List<Message> messages = chat.getMessages();
+                    for(Message m : messages){
+                        System.out.println("[" + m.getSender().getName() + "] " + m.getMessageString());
+                    }
                     break;
-                case "?":
-
+                case "send":
+                    System.out.println("Message: ");
+                    chat.pushMessage(new Message(input.nextLine(), activeAccount));
                     break;
                 case "exit":
                     System.exit(0);
@@ -163,6 +173,17 @@ class Account {
         return this.chats;
     }
 
+    public Chat getChat(String name) {
+        for(Chat c : chats){
+            if(c.getName() == name){
+                return c;
+            }
+        }
+
+        System.out.println("Chat not found.");
+        return null;
+    }
+
     public String getUUID() {
         return UUID;
     }
@@ -191,6 +212,7 @@ class Account {
                 return;
             }
         }
+
         System.out.println("\n\tThis user does not exist.\n");
     }
 
@@ -201,6 +223,7 @@ class Account {
         for (Account account : contacts) {
             System.out.println("\n\tUsername: " + account.getName() + "\n\tUUID: " + account.getUUID());
         }
+
         System.out.println();
     }
 
@@ -303,11 +326,10 @@ class Chat {
     public Chat(Account owner, String name) {
         this.owner = owner;
         accounts = new ArrayList<>();
+        this.accounts.add(owner);
 
         this.name = name;
         messages = new ArrayList<>();
-
-        this.addAccount(owner);
     }
 
     public Chat(Account owner) {
@@ -320,8 +342,8 @@ class Chat {
     }
 
     // Somehow retrieve messages. WIP.
-    public void pullMessage() {
-
+    public List<Message> getMessages() {
+        return this.messages;
     }
 
     public Account getOwner() {
@@ -345,12 +367,18 @@ class Chat {
  */
 class Message {
     private String text;
+    private Account sender;
 
-    public Message(String text) {
+    public Message(String text, Account sender) {
         this.text = text;
+        this.sender = sender;
     }
 
     public String getMessageString() {
         return text;
+    }
+
+    public Account getSender() {
+        return this.sender;
     }
 }
