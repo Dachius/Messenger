@@ -4,6 +4,8 @@ import java.util.*;
  * Basic proof of concept
  */
 
+@SuppressWarnings({"resource"})
+
 public class Messenger {
     private static Account activeAccount;
     private static ArrayList<Account> existingAccounts = new ArrayList<Account>();
@@ -72,7 +74,7 @@ public class Messenger {
             switch (input.nextLine().toLowerCase()) {
                 case "view chats":
                     for(Chat c : activeAccount.getChats()){
-
+                        System.out.println("[" + c.getName() + "]");
                     }
                     break;
                 case "create chat":
