@@ -83,7 +83,7 @@ public class Messenger {
                     System.out.print("Chat name: ");
                     activeAccount.addChat(new Chat(activeAccount, input.nextLine()));
                     break;
-                case "view chat":
+                case "display chat":
                     System.out.println("Enter chat name: ");
                     chatLoop(activeAccount, activeAccount.getChat(input.nextLine()));
                     break;
@@ -119,9 +119,10 @@ public class Messenger {
         Scanner input = new Scanner(System.in);
 
         outer: while (true) {
-            System.out.println("               [Chat]               ");
+            System.out.println("         [Chat]         ");
             System.out.println("[view] View messages.");
             System.out.println("[send] Send new message.");
+            System.out.println("[menu] Return to menu.");
             System.out.println("[exit] Exit program.");
             System.out.print("Choose: ");
             switch (input.nextLine().toLowerCase()) {
@@ -135,6 +136,8 @@ public class Messenger {
                     System.out.println("Message: ");
                     chat.pushMessage(new Message(input.nextLine(), activeAccount));
                     break;
+                case "menu":
+                    break outer;
                 case "exit":
                     System.exit(0);
                     break;
