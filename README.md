@@ -1,7 +1,11 @@
-# Messenger
-Simple command line messaging proof of concept.
+Simple command-line messaging proof of concept.
 
-How to run code:
+# Messenger Segment
+Run:
+java Messenger.java
+
+# Internet Connectivity Segment
+How to run:
 
 (1) Open 3 terminals
 -1 terminal for Server
