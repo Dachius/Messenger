@@ -1,24 +1,17 @@
 /*
 How to run code:
-
 (1) Open 3 terminals
 -1 terminal for Server
 -2 terminals for separate clients
-
 (2) For the server terminal
 run: 
 java Server [XXXX]
 X's being any integer between 0-9
-
 For the client terminal
 run:
-java UserClient [XXXX]
+java UserClient localhost [XXXX]
 X's being the previously listed integers from the server port
-
 */
-import java.io.*;
-import java.net.*;
-import java.util.*;
 
 public class Server {
     private int portNumber;
@@ -28,7 +21,7 @@ public class Server {
     public Server(int portNumber) {
         this.portNumber = portNumber;
     }
- 
+ /////////////////////////////////////////////////////////////////////////////
     public void exe() {
         try (ServerSocket servSocket = new ServerSocket(portNumber)) {
  
@@ -50,7 +43,7 @@ public class Server {
             ohnolol.printStackTrace();
         }
     }
- 
+ /////////////////////////////////////////////////////////////////////////////
     public static void main(String[] args) {
         if (args.length < 1) {
             System.out.println("Use case syntax: java ChatServer <portNumber-number>");
@@ -62,14 +55,22 @@ public class Server {
         Server server = new Server(portNumber);
         server.exe();
     }
- 
- 
+/////////////////////////////////////////////////////////////////////////////
+    void pipelineComms(String msg, UserThread exclUser){
+        for(UserThread AserThread : userThreads){
+            if(AserThread != exclUser){
+                AserThread.sendMessage(msg);
+            }
+        }
+    }
+ /////////////////////////////////////////////////////////////////////////////
     //Stores username of recent client connected
 
     void adduserHandle(String userHandles) {
         userHandle.add(userHandles);
     }
- 
+
+ /////////////////////////////////////////////////////////////////////////////
 /*removes user threads after disconnectging */
     void removeUser(String userHandles, UserThread AserThreads) {
         boolean removed = userHandle.remove(userHandle);
@@ -78,18 +79,18 @@ public class Server {
             System.out.println(userHandle + " quitted");
         }
     }
- 
+ /////////////////////////////////////////////////////////////////////////////
     Set<String> getUserHandles() {
         return this.userHandle;
     }
  
-
+/////////////////////////////////////////////////////////////////////////////
     boolean hasUsers() {
         return !this.userHandle.isEmpty();
     }
 }
-
-class UserThread extends Thread {
+/////////////////////////////////////////////////////////////////////////////
+class UserThread extends Thread { //fix here
     private Socket sock;
     private Server server;
     private PrintWriter writeMe;
@@ -106,13 +107,12 @@ class UserThread extends Thread {
  
             OutputStream output = sock.getOutputStream();
             writeMe = new PrintWriter(output, true);
- 
 
- 
             String userHandle = reader.readLine();
             server.adduserHandle(userHandle);
  
             String serverMessage = "New user: " + userHandle;
+            server.pipelineComms(serverMessage, this);
            
  
             String messageClient;
@@ -120,6 +120,7 @@ class UserThread extends Thread {
             do {
                 messageClient = reader.readLine();
                 serverMessage = "[" + userHandle + "]: " + messageClient;
+                server.pipelineComms(serverMessage, this);
               
  
             } while (!messageClient.equals("bye"));
@@ -128,7 +129,7 @@ class UserThread extends Thread {
             sock.close();
  
             serverMessage = userHandle + " has quit.";
-          
+            server.pipelineComms(serverMessage, this);
  
         } catch (IOException ohnolol) {
             System.out.println("Error in UserThread: " + ohnolol.getMessage());
