@@ -9,7 +9,6 @@ public class Messenger {
     private static ArrayList<Account> existingAccounts = new ArrayList<Account>();
 
     public static void main(String[] args) {
-        // activeAccount = loginLoop();
         loginLoop();
         // menuLoop(activeAccount);
     }
@@ -75,10 +74,12 @@ public class Messenger {
                     // Display chats
                     break outer;
                 case "create chat":
-                    // Create chats.
+                    System.out.print("Chat name: ");
+                    activeAccount.addChat(new Chat(activeAccount, input.nextLine()));
                     break outer;
                 case "add contact":
-                    // Add a new contact.
+                    System.out.print("Contact UUID: ");
+                    activeAccount.addContact(input.nextLine());
                     break outer;
                 case "uuid":
                     System.out.println("UUID: " + activeAccount.getUUID());
@@ -168,12 +169,9 @@ class Account {
 
     /*
      * Create new UUID.
-     * We're not technically checking that this ID is unique, but there will
-     * probabilistically
-     * be no ID colissions among currently living humans because there are 3 * 10^14
-     * combinations.
-     * Feel free to add some checking functionality if you want, but it doesn't
-     * matter.
+     * We're not technically checking that this ID is unique, but there will probabilistically
+     * be no ID colissions among currently living humans because there are 3 * 10^14combinations.
+     * Feel free to add some checking functionality if you want, but it doesn't matter.
      * 
      * Generates a string of random numbers or letters, capital and non-capital.
      */
@@ -195,11 +193,10 @@ class Account {
     }
 
     /*
-     * Login with existing account. Storing command line inteface here
+     * Login with existing account. Storing command line interface here
      * because I dunno how to properly structure command line interfaces.
      * 
-     * We need some sort of data class which has a map from UUIDs to account
-     * objects.
+     * We need some sort of data class which has a map from UUIDs to account objects.
      * I can code this up and use some JSON but eh.
      */
     public static Account login(List<Account> existingAccounts) {
