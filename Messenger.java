@@ -71,21 +71,23 @@ public class Messenger {
             System.out.print("Choose: ");
             switch (input.nextLine().toLowerCase()) {
                 case "view chats":
-                    // Display chats
-                    break outer;
+                    for(Chat c : activeAccount.getChats()){
+
+                    }
+                    break;
                 case "create chat":
                     System.out.print("Chat name: ");
                     activeAccount.addChat(new Chat(activeAccount, input.nextLine()));
-                    break outer;
+                    break;
                 case "add contact":
                     System.out.print("Contact UUID: ");
                     activeAccount.addContact(input.nextLine());
-                    break outer;
+                    break;
                 case "uuid":
                     System.out.println("UUID: " + activeAccount.getUUID());
                     break;
                 case "logout":
-                    // Return to login loop.
+                    loginLoop();
                     break outer;
                 case "exit":
                     System.exit(0);
@@ -148,6 +150,10 @@ class Account {
 
     public void addChat(Chat c) {
         chats.add(c);
+    }
+
+    public List<Chat> getChats() {
+        return this.chats;
     }
 
     public String getUUID() {
