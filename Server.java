@@ -13,6 +13,10 @@ java UserClient localhost [XXXX]
 X's being the previously listed integers from the server port
 */
 
+import java.net.*;
+import java.io.*;
+import java.util.*;
+
 public class Server {
     private int portNumber;
     private Set<String> userHandle = new HashSet<>();
