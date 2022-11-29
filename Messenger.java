@@ -84,7 +84,7 @@ public class Messenger {
                     activeAccount.addChat(new Chat(activeAccount, input.nextLine()));
                     break;
                 case "display chat":
-                    System.out.println("Enter chat name: ");
+                    System.out.print("Enter chat name: ");
                     chatLoop(activeAccount, activeAccount.getChat(input.nextLine()));
                     break;
                 case "add contact":
@@ -133,7 +133,7 @@ public class Messenger {
                     }
                     break;
                 case "send":
-                    System.out.println("Message: ");
+                    System.out.print("Message: ");
                     chat.pushMessage(new Message(input.nextLine(), activeAccount));
                     break;
                 case "menu":
@@ -178,7 +178,7 @@ class Account {
 
     public Chat getChat(String name) {
         for(Chat c : chats){
-            if(c.getName() == name){
+            if(c.getName().equals(name)){
                 return c;
             }
         }
