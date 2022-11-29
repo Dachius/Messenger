@@ -14,5 +14,5 @@ X's being any integer between 0-9
 
 For the client terminal
 run:
-java UserClient [XXXX]
+java UserClient localhost [XXXX]
 X's being the previously listed integers from the server port
