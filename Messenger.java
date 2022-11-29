@@ -63,13 +63,14 @@ public class Messenger {
     public static void menuLoop(Account activeAccount) {
         Scanner input = new Scanner(System.in);
         outer: while (true) {
-            System.out.println("                 [Navigation Menu]                 ");
-            System.out.println("  [view chats] View chats that you are a member of.");
-            System.out.println(" [create chat] Create a new chatroom.");
-            System.out.println(" [add contact] Add a new contact.");
-            System.out.println("        [UUID] Get account UUID.");
-            System.out.println("      [logout] Logout of account.");
-            System.out.println("        [exit] Exit program.");
+            System.out.println("                  [Navigation Menu]                  ");
+            System.out.println("    [view chats] View chats that you are a member of.");
+            System.out.println("   [create chat] Create a new chatroom.");
+            System.out.println("   [add contact] Add a new contact.");
+            System.out.println(" [view contacts] View contact list.");
+            System.out.println("          [UUID] Get account UUID.");
+            System.out.println("        [logout] Logout of account.");
+            System.out.println("          [exit] Exit program.");
             System.out.print("Choose: ");
             switch (input.nextLine().toLowerCase()) {
                 case "view chats":
@@ -82,11 +83,16 @@ public class Messenger {
                     activeAccount.addChat(new Chat(activeAccount, input.nextLine()));
                     break;
                 case "add contact":
-                    System.out.print("Contact UUID: ");
-                    activeAccount.addContact(input.nextLine());
+                    // Add a new contact.
+                    System.out.print("Enter UUID of new contact: ");
+                    String ID = input.nextLine();
+                    activeAccount.addContact(existingAccounts, ID);
+                    break;
+                case "view contacts":
+                    activeAccount.viewContacts();
                     break;
                 case "uuid":
-                    System.out.println("UUID: " + activeAccount.getUUID());
+                    System.out.println("UUID: " + activeAccount.getUUID() + "\n");
                     break;
                 case "logout":
                     loginLoop();
@@ -115,7 +121,6 @@ public class Messenger {
             System.out.print("Choose: ");
             switch (input.nextLine().toLowerCase()) {
                 case "":
-
                     break;
                 case "?":
 
@@ -171,8 +176,32 @@ class Account {
     }
 
     // WIP, need way to get reference to account object using UUID.
-    public void addContact(String ID) {
+    public void addContact(List<Account> existingAccounts, String ID) {
         // Contacts.add(Data.getAccount(ID));
+        if (this.UUID.equals(ID)) {
+            System.out.println("\n\tThis is your own UUID.\n");
+            return;
+        }
+
+        for (Account account : existingAccounts) {
+            if (account.getUUID().equals(ID)) {
+                contacts.add(account);
+
+                System.out.println("\n\tUser " + account.getName() + " added to contacts.\n");
+                return;
+            }
+        }
+        System.out.println("\n\tThis user does not exist.\n");
+    }
+
+    public void viewContacts() {
+        if (contacts.isEmpty()) {
+            System.out.println("\n\tYour contacts list is empty.");
+        }
+        for (Account account : contacts) {
+            System.out.println("\n\tUsername: " + account.getName() + "\n\tUUID: " + account.getUUID());
+        }
+        System.out.println();
     }
 
     /*
